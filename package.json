@@ -1,0 +1,45 @@
+{
+    "name": "marketplace",
+    "version": "0.0.1",
+    "description": "Custom marketplace, to sell personal items.",
+    "main": "index.js",
+    "scripts": {
+        "format": "npx prettier -u --write .",
+        "lint": "npx prettier -u --check .",
+        "start": "npx nodemon server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Mariosyian/marketplace.git"
+    },
+    "keywords": [
+        "marketplace"
+    ],
+    "author": "Marios Yiannakou",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Mariosyian/marketplace/issues"
+    },
+    "homepage": "https://github.com/Mariosyian/marketplace#readme",
+    "dependencies": {
+        "dotenv": "^8.2.0",
+        "ejs": "^3.1.6",
+        "express": "^4.17.1",
+        "mongoose": "^5.12.3"
+    },
+    "devDependencies": {
+        "husky": "^4.3.8",
+        "lint-staged": "^10.5.4",
+        "nodemon": "^2.0.7",
+        "prettier": "^2.2.1"
+    },
+    "optionalDependencies": {},
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*": "npx prettier -u --write"
+    }
+}

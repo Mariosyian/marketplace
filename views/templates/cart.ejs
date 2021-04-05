@@ -1,0 +1,38 @@
+<%- include('header') %>
+<form action="/remove-from-cart/" method="post"></form>
+<table class="table table-bordered table-striped table-dark mg-top-05">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Item Name</th>
+            <th>Item Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% cart.forEach((item, index) => { %>
+        <tr>
+            <td><%= index + 1 %></td>
+            <td><%= item.name %></td>
+            <td>
+                £<%= item.price.toFixed(2) %>
+                <form action="/remove-from-cart/<%= item.id %>" method="POST">
+                    <button type="submit" name="removeFromCart" class="btn btn-danger">
+                        <i class="bi bi-x-circle"></i></td>
+                    </button>
+                </form>
+        </tr>
+        <% }) %>
+        <tr>
+            <td colspan="2"></td>
+            <td>£<%= total.toFixed(2) %></td>
+        </tr>
+    </tbody>
+</table>
+<div class="row">
+    <form action="/cart" method="POST">
+        <button class="btn btn-primary" id="purchase" name="purchase" value="Complete purchase" alt="purchase button">
+            <i class="bi bi-basket"></i> Buy now
+        </button>
+    </form>
+</div>
+<%- include('footer') %>

@@ -1,0 +1,24 @@
+<%- include('header') %>
+<table class="table table-bordered table-striped table-dark">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Item Name</th>
+            <th>Item Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% cart.forEach((item, index) => { %>
+        <tr>
+            <td><%= index + 1 %></td>
+            <td><%= item.name %></td>
+            <td>£<%= item.price.toFixed(2) %></td>
+        </tr>
+        <% }) %>
+        <tr>
+            <td colspan="2"></td>
+            <td>£<%= total.toFixed(2) %></td>
+        </tr>
+    </tbody>
+</table>
+<%- include('footer') %>

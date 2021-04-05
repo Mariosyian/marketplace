@@ -1,0 +1,20 @@
+<%- include('header') %>
+    <div class="row">
+    <% items.forEach( (item) => { %>
+        <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src="<%= item.image %>" alt="<%= item.name %>" width="250px" height="150px" onclick="popUpImage('<%= item.image %>', '<%= item.name %>')">
+            <div class="card-body">
+                <h5 class="card-title"><%= item.name %> - £<%= item.price.toFixed(2) %></h5>
+                <p class="card-text ellipsis-5-ln"><%= item.description %></p>
+            </div>
+            <div class="addToCart-btn">
+                <form action="/add-to-cart/<%= item.id %>" method="POST">
+                    <button class="btn btn-primary" value="Add to cart" name="addToCart" alt="Add to cart">
+                        <i class="bi bi-cart"></i> Add to cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    <% }) %>
+    </div>
+<%- include('footer') %>

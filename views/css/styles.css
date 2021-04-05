@@ -1,0 +1,58 @@
+body {
+    background-color: #888ca1;
+}
+
+table {
+    margin-top: 0.5rem;
+}
+
+.addToCart-btn {
+    padding-bottom: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+.card {
+    margin: 1rem;
+}
+
+.cart-btn {
+    margin: 0 0.5rem;
+}
+
+.close-btn {
+    background-color: white;
+    position: absolute;
+    right: 4%;
+    top: 2%;
+}
+
+.ellipsis-5-ln {
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popUpDiv {
+    border: 1px solid #ccc;
+    background-color: white;
+    height: 36em;
+    top: 50%;
+    left: 50%;
+    margin-left: -25em; /*set to a negative number 1/2 of your width*/
+    margin-top: -18em; /*set to a negative number 1/2 of your height*/
+    position: fixed;
+    text-align: center;
+    width: 50em;
+}
+
+.popUpImg {
+    max-height: 95%;
+    max-width: 100%;
+    padding-top: auto;
+}
+
+#errors {
+    margin: 0.5rem 0 0;
+}

@@ -1,0 +1,20 @@
+<%- include('header') %>
+<div class="card success-card text-center mg-1">
+    <div class="row">
+        <img class="card-img-top image-center party-popper flipX" src="/static/assets/images/party-popper.png" alt="party popper">
+        <img class="card-img-top image-center present" src="/static/assets/images/present.png" alt="present">
+        <img class="card-img-top image-center party-popper" src="/static/assets/images/party-popper.png" alt="party popper">
+    </div>
+    <div class="card-body">
+      <h3 class="card-title">Success!</h3>
+      <p class="card-text">You have successfully purchased</p>
+      <ul class="text-left">
+          <% cart.forEach((item) => { %>
+          <li><%= item.name %></li>
+          <% }) %>
+      </ul>
+      <hr class="width-5">
+      <a href="/invoice" class="btn btn-primary">Download your invoice here</a>
+    </div>
+</div>
+<%- include('footer') %>

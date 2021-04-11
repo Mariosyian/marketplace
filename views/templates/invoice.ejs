@@ -1,0 +1,59 @@
+<%- include('header') %>
+<table class="table table-borderless">
+    <tbody>
+    <tr>
+        <td class="border-0">
+            <div class="row">
+                <div class="col-md text-center text-md-left mb-3 mb-md-0">
+                    <img class="logo img-fluid mb-3" src="/static/assets/logo/black/512x512.png" style="max-height: 140px;"/>
+                    <br>
+                    <h2 class="mb-1">Marios Marketplace</h2>
+                    Manchester, UK<br>
+                    mariosyian2@hotmail.com<br>
+                    <strong><a href="/">Marketplace</a></strong>
+                </div>
+
+                <div class="col text-center text-md-right">
+                    <!-- Dont' display Bill To on mobile -->
+                    <span class="d-none d-md-block">
+                        <h1>Billed To</h1>
+                    </span>
+                    <h4 class="mb-0"><%= customer.name %></h4>
+                    <%= customer.address_1 %><br>
+                    <%= customer.address_2 %><br>
+                    <%= customer.address_3 %><br>
+                    <%= customer.telephone %><br>
+                    <%= customer.email %><br>
+                    <h5 class="mb-0 mt-3">Date of purchase (UTC):</h5>
+                    <p><%= today %></p>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Summary</th>
+        <th class="text-right">Price</th>
+    </tr>
+    </thead>
+    <tbody>
+        <% cart.forEach((item) => { %>
+            <tr>
+                <td><%= item.name %></td>
+                <td class="font-weight-bold align-middle text-right text-nowrap">£<%= item.price.toFixed(2) %> GBP</td>
+            </tr>
+        <% }) %>
+        <td colspan="2" class="text-right border-0 pt-4"><h5>£<%= total.toFixed(2) %> GBP</h5></td>
+    </tr>
+</table>
+
+<h5 class="text-center pt-2">
+    Thank you for your purchase!
+    <hr class="width-5">
+    <button  id="download" class="btn btn-primary" onclick="downloadInvoice()">Click here to download this invoice as a PDF</button>
+</h5>
+<%- include('footer') %>

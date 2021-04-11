@@ -26,12 +26,26 @@ body {
     text-overflow: ellipsis;
 }
 
+.flipX {
+    transform: scaleX(-1);
+}
+
+.image-center {
+    display: block;
+    margin: auto;
+}
+
 .mg-1 {
     margin: 1rem;
 }
 
 .mg-top-05 {
     margin-top: 0.5rem;
+}
+
+.party-popper {
+    height: 25%;
+    width: 25%;
 }
 
 .popUpDiv {

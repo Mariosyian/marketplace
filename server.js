@@ -98,6 +98,30 @@ app.get("/cart", (req, res) => {
     res.render("templates/cart", context)
 })
 
+app.get("/success", (req, res) => {
+    let context = getContext(true)
+    context["cart"] = getCartItemsAndTotal()[0]
+    res.render("templates/success", context)
+})
+
+app.get("/invoice", (req, res) => {
+    const itemsAndTotal = getCartItemsAndTotal()
+    const customer = {
+        name: "Marios Yiannakou",
+        address_1: "Room X, Flat Y",
+        address_2: "99 Smith Street",
+        address_3: null,
+        email: "john@smith.com",
+        telephone: "+441234567890",
+    }
+    let context = getContext(true)
+    context["customer"] = customer
+    context["cart"] = itemsAndTotal[0]
+    context["total"] = itemsAndTotal[1]
+    context["today"] = getToday()
+    res.render("templates/invoice", context)
+})
+
 app.listen(port, () => {
     console.log("Server listening on port " + port)
 })
@@ -148,4 +172,22 @@ function getCartItemsAndTotal() {
     }, 0)
 
     return [cartItems, totalPrice]
+}
+
+/**
+ * @returns Today's date in HH:MM DD-MM-YYYY format (UTC)
+ */
+function getToday() {
+    const date = new Date()
+    return (
+        String(date.getUTCHours()).padStart(2, "0") +
+        ":" +
+        String(date.getUTCMinutes()).padStart(2, "0") +
+        " " +
+        String(date.getDate()).padStart(2, "0") +
+        "-" +
+        String(date.getMonth()).padStart(2, "0") +
+        "-" +
+        date.getFullYear()
+    )
 }

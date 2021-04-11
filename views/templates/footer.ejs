@@ -21,6 +21,13 @@
             function closePopUp() {
                 document.getElementById("popUp").hidden = true
             }
+
+            function downloadInvoice() {
+                const downloadBtn = document.getElementById("download")
+                downloadBtn.hidden = true
+                window.print()
+                downloadBtn.hidden = false
+            }
         </script>
     </body>
 </html>

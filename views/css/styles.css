@@ -2,17 +2,9 @@ body {
     background-color: #888ca1;
 }
 
-table {
-    margin-top: 0.5rem;
-}
-
 .addToCart-btn {
     padding-bottom: 0.5rem;
     padding-left: 0.5rem;
-}
-
-.card {
-    margin: 1rem;
 }
 
 .cart-btn {
@@ -39,8 +31,8 @@ table {
 }
 
 .image-center {
-    display:block;
-    margin:auto;
+    display: block;
+    margin: auto;
 }
 
 .mg-1 {
@@ -75,6 +67,33 @@ table {
     padding-top: auto;
 }
 
-#errors {
-    margin: 0.5rem 0 0;
+.present {
+    height: 35%;
+    width: 35%;
+}
+
+.red {
+    color: red;
+}
+
+.success-card {
+    height: 35%;
+    margin: auto;
+    width: 25%;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.width-5 {
+    width: 5%;
 }

@@ -8,7 +8,7 @@
                 <p class="card-text ellipsis-5-ln"><%= item.description %></p>
             </div>
             <div class="addToCart-btn">
-                <% if (item.sold) { %>
+                <% if (item.quantity <= 0) { %>
                     <button class="btn btn-danger" value="Sold">
                         SOLD
                     </button>

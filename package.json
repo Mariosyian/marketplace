@@ -1,6 +1,6 @@
 {
     "name": "marketplace",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "Custom marketplace, to sell personal items.",
     "main": "index.js",
     "scripts": {
@@ -27,7 +27,7 @@
         "dotenv": "^8.2.0",
         "ejs": "^3.1.6",
         "express": "^4.17.1",
-        "mongoose": "^5.12.3",
+        "mongoose": "^5.12.10",
         "uuid": "^8.3.2"
     },
     "devDependencies": {

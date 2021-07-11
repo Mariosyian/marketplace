@@ -2,6 +2,7 @@ const axios = require("axios").default
 const base64 = require("base-64")
 const dotenv = require("dotenv").config()
 const express = require("express")
+const mongoose = require("mongoose")
 const uuid = require("uuid")
 
 const paypal_client_id =
@@ -9,6 +10,29 @@ const paypal_client_id =
 const paypal_secret =
     process.env.PAYPAL_LIVE_SECRET || process.env.PAYPAL_SANDBOX_SECRET || null
 const port = process.env.port || 3000
+
+const mongoContext = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}
+mongoose.connect(process.env.MONGO_DB_URL, mongoContext, (err) => {
+    if (err) {
+        console.error("Failed to connect to database: [ " + err.message + " ]")
+        console.error("Exiting server...")
+        process.exit(1)
+    } else {
+        console.log("Successfully connected to database!")
+    }
+})
+
+const itemSchema = new mongoose.Schema({
+    name: String,
+    description: String,
+    price: Number,
+    quantity: Number,
+    image: String,
+})
+const Item = mongoose.model("Item", itemSchema)
 
 const app = express()
 app.set("view engine", "ejs")
@@ -34,65 +58,16 @@ const customer = {
     email: "john@smith.com",
     telephone: "+441234567890",
 }
-const items = [
-    {
-        id: 1,
-        name: "ASUS RTX 2060",
-        description:
-            "ASUS Phoenix GeForce RTX™ 2060 6GB GDDR6 with the new NVIDIA Turing™ GPU architecture.",
-        price: 420.0,
-        quantity: 1,
-        image: "/static/assets/images/asus-rtx-2060.jpg",
-    },
-    {
-        id: 2,
-        name: "GTX Titan X",
-        description:
-            "The NVIDIA TITAN X, featuring the NVIDIA Pascal™ architecture, is the ultimate graphics card. Whatever you're doing, this groundbreaking TITAN X gives you the power to accomplish things you never thought possible.",
-        price: 500.0,
-        quantity: 1,
-        image: "/static/assets/images/gtx-titan-x.jpg",
-    },
-    {
-        id: 3,
-        name: "MSI GTX 1050",
-        description: "GeForce MSI GTX 1050.",
-        price: 130.0,
-        quantity: 0,
-        image: "/static/assets/images/msi-gtx-1050.jpg",
-    },
-    {
-        id: 4,
-        name: "MSI RTX 2060 VENTUS OC",
-        description: "GeForce RTX 2060 VENTUS XS 6G OC.",
-        price: 420.0,
-        quantity: 0,
-        image: "/static/assets/images/msi-rtx-2060.jpg",
-    },
-    {
-        id: 5,
-        name: "PALIT GTX 1050",
-        description:
-            "Turn your PC into a true gaming rig with the fast, powerful GeForce® GTX 1050. It's powered by NVIDIA Pascal™— the most advanced GPU architecture ever created—and features innovative NVIDIA technologies to drive the latest games in their full glory.",
-        price: 120.0,
-        quantity: 1,
-        image: "/static/assets/images/palit-gtx-1050.jpg",
-    },
-    {
-        id: 6,
-        name: "Ryzen 5 3600",
-        description:
-            "The AMD Ryzen 3rd gen processors give you a huge boost in power over the previous generation. You'll get a faster CPU with more memory – perfect for gaming, or just powering through huge work projects and creative tasks.",
-        price: 140.0,
-        quantity: 0,
-        image: "/static/assets/images/ryzen-5-3600.jpg",
-    },
-]
 
 app.get("/", (req, res) => {
     let context = getContext()
-    context["items"] = items
-    res.render("templates/index", context)
+    Item.find({}, (err, items) => {
+        if (err) {
+            console.err("Error while fetching items: ", err)
+        }
+        context["items"] = items
+        res.render("templates/index", context)
+    })
 })
 
 app.get("/search", (req, res) => {
@@ -104,7 +79,8 @@ app.get("/search", (req, res) => {
 })
 
 app.post("/add-to-cart/:itemID", (req, res) => {
-    const itemID = Number(req.params.itemID)
+    const itemID = req.params.itemID
+
     if (!cart.includes(itemID)) {
         cart.push(itemID)
     } else {
@@ -114,7 +90,7 @@ app.post("/add-to-cart/:itemID", (req, res) => {
 })
 
 app.post("/remove-from-cart/:itemID", (req, res) => {
-    const itemID = Number(req.params.itemID)
+    const itemID = req.params.itemID
     if (cart.includes(itemID)) {
         cart.splice(
             cart.findIndex((el) => {
@@ -127,124 +103,130 @@ app.post("/remove-from-cart/:itemID", (req, res) => {
 })
 
 app.get("/cart", (req, res) => {
-    const itemsAndTotal = getCartItemsAndTotal()
-    let context = getContext(true)
-    context["cart"] = itemsAndTotal[0]
-    context["total"] = itemsAndTotal[1]
-    res.render("templates/cart", context)
+    getCartItemsAndTotal().then((itemsAndTotal) => {
+        let context = getContext(true)
+        context["cart"] = itemsAndTotal[0]
+        context["total"] = itemsAndTotal[1]
+        res.render("templates/cart", context)
+    })
 })
 
 app.post("/purchase", (req, res) => {
-    const itemsAndTotal = getCartItemsAndTotal()
-    let order = {
-        application_context: {
-            brand_name: "mymarketplace",
-            locale: "en-GB",
-            landing_page: "NO_PREFERENCE",
-            shipping_preference: "GET_FROM_FILE",
-            user_action: "PAY_NOW",
-            return_url: "http://localhost:3000/success",
-            cancel_url: "http://localhost:3000/cart",
-        },
-        intent: "CAPTURE",
-        payer: {
-            email_address: customer.email,
-            name: {
-                given_name: customer.first_name,
-                surname: customer.last_name,
+    getCartItemsAndTotal().then((itemsAndTotal) => {
+        let order = {
+            application_context: {
+                brand_name: "mymarketplace",
+                locale: "en-GB",
+                landing_page: "NO_PREFERENCE",
+                shipping_preference: "GET_FROM_FILE",
+                user_action: "PAY_NOW",
+                return_url: "http://localhost:3000/success",
+                cancel_url: "http://localhost:3000/cart",
             },
-            address: {
-                address_line_1: customer.address_1,
-                address_line_2: customer.address_2,
-                postal_code: customer.postal_code,
-                country_code: "GB",
+            intent: "CAPTURE",
+            payer: {
+                email_address: customer.email,
+                name: {
+                    given_name: customer.first_name,
+                    surname: customer.last_name,
+                },
+                address: {
+                    address_line_1: customer.address_1,
+                    address_line_2: customer.address_2,
+                    postal_code: customer.postal_code,
+                    country_code: "GB",
+                },
             },
-        },
-        purchase_units: [
-            {
-                amount: {
-                    currency_code: "GBP",
-                    // Adjust for shipping / tax / discounts here, else the request fails
-                    value: String(itemsAndTotal[1] + SHIPPING_PRICE),
-                    breakdown: {
-                        item_total: {
-                            currency_code: "GBP",
-                            value: String(itemsAndTotal[1]),
+            purchase_units: [
+                {
+                    amount: {
+                        currency_code: "GBP",
+                        // Adjust for shipping / tax / discounts here, else the request fails
+                        value: String(itemsAndTotal[1] + SHIPPING_PRICE),
+                        breakdown: {
+                            item_total: {
+                                currency_code: "GBP",
+                                value: String(itemsAndTotal[1]),
+                            },
+                            // Flat-rate shipping for across the UK
+                            shipping: {
+                                currency_code: "GBP",
+                                value: String(SHIPPING_PRICE),
+                            },
                         },
-                        // Flat-rate shipping for across the UK
                         shipping: {
-                            currency_code: "GBP",
-                            value: String(SHIPPING_PRICE),
+                            name: customer.name,
+                            type: "SHIPPING",
+                            address: {
+                                address_line_1: customer.address_1,
+                                address_line_2: customer.address_2,
+                                postal_code: customer.postal_code,
+                                country_code: "GB",
+                            },
                         },
                     },
-                    shipping: {
-                        name: customer.name,
-                        type: "SHIPPING",
-                        address: {
-                            address_line_1: customer.address_1,
-                            address_line_2: customer.address_2,
-                            postal_code: customer.postal_code,
-                            country_code: "GB",
-                        },
+                    // Seller information
+                    payee: {
+                        email_address: "mariosyian2@hotmail.com",
                     },
+                    invoice_id: uuid.v4(),
+                    soft_descriptor: "mymarketplace",
+                    items: itemsAndTotal[0].map((item) => {
+                        if (item.quantity <= 0) {
+                            // TODO: Pass list of items which are unavailable by name
+                            addError("One or more items in your cart aren't available.")
+                            res.redirect("/cart")
+                        }
+                        return {
+                            name: item.name,
+                            unit_amount: {
+                                currency_code: "GBP",
+                                value: String(item.price),
+                            },
+                            quantity: "1",
+                            description:
+                                item.description.length > 127
+                                    ? item.name
+                                    : item.description,
+                        }
+                    }),
                 },
-                // Seller information
-                payee: {
-                    email_address: "mariosyian2@hotmail.com",
-                },
-                invoice_id: uuid.v4(),
-                soft_descriptor: "mymarketplace",
-                items: itemsAndTotal[0].map((item) => {
-                    if (item.quantity <= 0) {
-                        // TODO: Pass list of items which are unavailable by name
-                        addError("One or more items in your cart aren't available.")
-                        res.redirect("/cart")
-                    }
-                    return {
-                        name: item.name,
-                        unit_amount: {
-                            currency_code: "GBP",
-                            value: String(item.price),
-                        },
-                        quantity: "1",
-                        description:
-                            item.description.length > 127
-                                ? item.name
-                                : item.description,
-                    }
-                }),
-            },
-        ],
-    }
-    axiosRequest("POST", "https://api-m.sandbox.paypal.com/v2/checkout/orders", order, {
-        "Content-type": "application/json",
-        Accept: "application/json",
-        Authorization: "Bearer " + paypal_access_token,
+            ],
+        }
+        axiosRequest(
+            "POST",
+            "https://api-m.sandbox.paypal.com/v2/checkout/orders",
+            order,
+            {
+                "Content-type": "application/json",
+                Accept: "application/json",
+                Authorization: "Bearer " + paypal_access_token,
+            }
+        )
+            .then((response) => {
+                const approval_link = response.data.links.filter(
+                    (link) => link.rel === "approve"
+                )[0]
+                res.redirect(approval_link.href)
+            })
+            .catch((error) => {
+                console.error("Error while completing purchase: " + error.toString())
+                res.redirect("/")
+            })
     })
-        .then((response) => {
-            const approval_link = response.data.links.filter(
-                (link) => link.rel === "approve"
-            )[0]
-            res.redirect(approval_link.href)
-        })
-        .catch((error) => {
-            console.error(
-                "Error while completing purchase: " + error.response.data.details
-            )
-            res.redirect("/")
-        })
 })
 
 app.get("/success", (req, res) => {
     // Since the purchase was successful, we can clear the cart
     // and transfer the items to the purchased list.
-    const itemsAndTotal = getCartItemsAndTotal()
-    updateItemQuantity(itemsAndTotal[0])
-    purchased = itemsAndTotal[0].slice()
-    cart = []
-    let context = getContext(true)
-    context["purchased"] = purchased
-    res.render("templates/success", context)
+    getCartItemsAndTotal().then((itemsAndTotal) => {
+        updateItemQuantity(itemsAndTotal[0])
+        purchased = itemsAndTotal[0].slice()
+        cart = []
+        let context = getContext(true)
+        context["purchased"] = purchased
+        res.render("templates/success", context)
+    })
 })
 
 /********************************************************************/
@@ -304,20 +286,28 @@ function getContext(resetErrors) {
  *   users cart, and the second element being the sum of the items prices.
  */
 function getCartItemsAndTotal() {
-    let cartItems = []
+    let itemPromises = []
     cart.forEach((id) => {
-        // TODO: Pull items via their IDs from db
-        cartItems.push(
-            items.find((item) => {
-                return item.id === id
+        const db_id = "ObjectId('" + id + "')"
+        itemPromises.push(
+            new Promise((resolve, reject) => {
+                Item.findById(id, (err, data) => {
+                    if (err) {
+                        reject(err)
+                    }
+                    resolve(data)
+                })
             })
         )
     })
-    const totalPrice = cartItems.reduce((total, item) => {
-        return (total += item.price)
-    }, 0)
 
-    return [cartItems, totalPrice]
+    return Promise.all(itemPromises).then((items) => {
+        const totalPrice = items.reduce((total, item) => {
+            return (total += item.price)
+        }, 0)
+
+        return [items, totalPrice]
+    })
 }
 
 /**

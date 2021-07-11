@@ -1,27 +1,28 @@
 <%- include('header') %>
-    <div class="row">
-    <% items.forEach( (item) => { %>
-        <div class="card mg-1" style="width: 18rem;">
-            <img class="card-img-top" src="<%= item.image %>" alt="<%= item.name %>" width="250px" height="150px" onclick="popUpImage('<%= item.image %>', '<%= item.name %>')">
-            <div class="card-body">
-                <h5 class="card-title"><%= item.name %> - £<%= item.price.toFixed(2) %></h5>
-                <p class="card-text ellipsis-5-ln"><%= item.description %></p>
-            </div>
-            <div class="addToCart-btn">
-                <% if (item.quantity <= 0) { %>
-                    <button class="btn btn-danger" value="Sold">
-                        SOLD
-                    </button>
-                <% } else { %>
-                <form action="/add-to-cart/<%= item.id %>" method="POST">
-                    <button class="btn btn-primary" value="Add to cart" name="addToCart" alt="Add to cart" type="submit">
-                        <i class="bi bi-cart"></i> Add to cart
-                    </button>
-                </form>
-                <% } %>
-            </div>
-        </div>
-    <% }) %>
+    <div class="row justify-center">
+            <% items.forEach( (item) => { %>
+                <div class="card mg-1 width-18rem">
+                    <img class="card-img-top" src="<%= item.image %>" alt="<%= item.name %>" height="65%" onclick="popUpImage('<%= item.image %>', '<%= item.name %>')">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= item.name %> - £<%= item.price.toFixed(2) %></h5>
+                        <hr class="card-hr">
+                        <p class="card-text ellipsis-5-ln mg-bottom-01"><%= item.description %></p>
+                    </div>
+                    <div class="addToCart-btn">
+                        <% if (item.quantity <= 0) { %>
+                            <button class="btn btn-danger" value="Sold">
+                                SOLD
+                            </button>
+                        <% } else { %>
+                        <form action="/add-to-cart/<%= item.id %>" method="POST">
+                            <button class="btn btn-primary" value="Add to cart" name="addToCart" alt="Add to cart" type="submit">
+                                <i class="bi bi-cart"></i> Add to cart
+                            </button>
+                        </form>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
     </div>
 
     <div id="popUp" class="popUpDiv" hidden>

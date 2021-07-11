@@ -1,3 +1,7 @@
+body {
+    background-image: url("../assets/images/background.png");
+}
+
 .addToCart-btn {
     padding-bottom: 0.5rem;
     padding-left: 0.5rem;
@@ -7,8 +11,17 @@
     background-color: #888ca1;
 }
 
+.card-hr {
+    width: 75%;
+}
+
 .cart-btn {
     margin: 0 0.5rem;
+}
+
+.centralise {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .close-btn {
@@ -35,8 +48,16 @@
     margin: auto;
 }
 
+.justify-center {
+    justify-content: center;
+}
+
 .mg-1 {
     margin: 1rem;
+}
+
+.mg-bottom-01 {
+    margin-bottom: 0.1rem;
 }
 
 .mg-top-05 {
@@ -49,16 +70,19 @@
 }
 
 .popUpDiv {
+    --height: 26rem;
+    --width: 36rem;
+
     border: 1px solid #ccc;
     background-color: white;
-    height: 36em;
+    height: var(--height);
     top: 50%;
     left: 50%;
-    margin-left: -25em; /*set to a negative number 1/2 of your width*/
-    margin-top: -18em; /*set to a negative number 1/2 of your height*/
+    margin-left: calc(var(--width) / -2); /*set to a negative number 1/2 of width*/
+    margin-top: calc(var(--height) / -2); /*set to a negative number 1/2 of height*/
     position: fixed;
     text-align: center;
-    width: 50em;
+    width: var(--width);
 }
 
 .popUpImg {
@@ -96,4 +120,8 @@
 
 .width-5 {
     width: 5%;
+}
+
+.width-18rem {
+    width: 18rem;
 }

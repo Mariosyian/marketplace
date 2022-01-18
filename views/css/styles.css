@@ -125,3 +125,8 @@ body {
 .width-18rem {
     width: 18rem;
 }
+
+#logoImg {
+    height: 32px;
+    width: 32px;
+}

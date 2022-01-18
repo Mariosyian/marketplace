@@ -11,19 +11,22 @@ const paypal_secret =
     process.env.PAYPAL_LIVE_SECRET || process.env.PAYPAL_SANDBOX_SECRET || null
 const port = process.env.port || 3000
 
-const mongoContext = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-}
-mongoose.connect(process.env.MONGO_DB_URL, mongoContext, (err) => {
-    if (err) {
-        console.error("Failed to connect to database: [ " + err.message + " ]")
-        console.error("Exiting server...")
-        process.exit(1)
-    } else {
-        console.log("Successfully connected to database!")
+mongoose.connect(
+    process.env.MONGO_DB_URL,
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    },
+    (err) => {
+        if (err) {
+            console.error("Failed to connect to database: [ " + err.message + " ]")
+            console.error("Exiting server...")
+            process.exit(1)
+        } else {
+            console.log("Successfully connected to database!")
+        }
     }
-})
+)
 
 const itemSchema = new mongoose.Schema({
     name: String,

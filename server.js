@@ -63,9 +63,11 @@ app.get("/", (req, res) => {
     let context = getContext()
     Item.find({}, (err, items) => {
         if (err) {
-            console.err("Error while fetching items: ", err)
+            console.error("Error while fetching items: ", err)
+            context["items"] = []
+        } else {
+            context["items"] = items
         }
-        context["items"] = items
         res.render("templates/index", context)
     })
 })
